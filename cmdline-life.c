@@ -34,13 +34,13 @@ const char *gengetopt_args_info_versiontext = "";
 const char *gengetopt_args_info_description = "";
 
 const char *gengetopt_args_info_detailed_help[] = {
-  "      --help                  Print help and exit",
-  "      --detailed-help         Print help, including all details and hidden\n                                options, and exit",
-  "  -V, --version               Print version and exit",
-  "  -r, --ruleint=Rule integer  Specify rule-int on command line",
-  "  -w, --width=width           Specify width",
-  "  -h, --height=height         Specify height",
-  "  -d, --delay=delay           Specify delay time",
+  "  -h, --help           Print help and exit",
+  "      --detailed-help  Print help, including all details and hidden options,\n                         and exit",
+  "  -V, --version        Print version and exit",
+  "  -r, --ruleint=rule   Specify rule-int on command line  (default=`6152')",
+  "  -W, --width=width    Specify width",
+  "  -H, --height=height  Specify height",
+  "  -d, --delay=delay    Specify delay time",
   "  Specify delay time, multiplied by 10ms",
     0
 };
@@ -94,6 +94,7 @@ static
 void clear_args (struct gengetopt_args_info *args_info)
 {
   FIX_UNUSED (args_info);
+  args_info->ruleint_arg = 6152;
   args_info->ruleint_orig = NULL;
   args_info->width_orig = NULL;
   args_info->height_orig = NULL;
@@ -494,22 +495,27 @@ cmdline_parser_internal (
       int option_index = 0;
 
       static struct option long_options[] = {
-        { "help",	0, NULL, 0 },
+        { "help",	0, NULL, 'h' },
         { "detailed-help",	0, NULL, 0 },
         { "version",	0, NULL, 'V' },
         { "ruleint",	1, NULL, 'r' },
-        { "width",	1, NULL, 'w' },
-        { "height",	1, NULL, 'h' },
+        { "width",	1, NULL, 'W' },
+        { "height",	1, NULL, 'H' },
         { "delay",	1, NULL, 'd' },
         { 0,  0, 0, 0 }
       };
 
-      c = getopt_long (argc, argv, "Vr:w:h:d:", long_options, &option_index);
+      c = getopt_long (argc, argv, "hVr:W:H:d:", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
       switch (c)
         {
+        case 'h':	/* Print help and exit.  */
+          cmdline_parser_print_help ();
+          cmdline_parser_free (&local_args_info);
+          exit (EXIT_SUCCESS);
+
         case 'V':	/* Print version and exit.  */
           cmdline_parser_print_version ();
           cmdline_parser_free (&local_args_info);
@@ -520,33 +526,33 @@ cmdline_parser_internal (
         
           if (update_arg( (void *)&(args_info->ruleint_arg), 
                &(args_info->ruleint_orig), &(args_info->ruleint_given),
-              &(local_args_info.ruleint_given), optarg, 0, 0, ARG_INT,
+              &(local_args_info.ruleint_given), optarg, 0, "6152", ARG_INT,
               check_ambiguity, override, 0, 0,
               "ruleint", 'r',
               additional_error))
             goto failure;
         
           break;
-        case 'w':	/* Specify width.  */
+        case 'W':	/* Specify width.  */
         
         
           if (update_arg( (void *)&(args_info->width_arg), 
                &(args_info->width_orig), &(args_info->width_given),
               &(local_args_info.width_given), optarg, 0, 0, ARG_INT,
               check_ambiguity, override, 0, 0,
-              "width", 'w',
+              "width", 'W',
               additional_error))
             goto failure;
         
           break;
-        case 'h':	/* Specify height.  */
+        case 'H':	/* Specify height.  */
         
         
           if (update_arg( (void *)&(args_info->height_arg), 
                &(args_info->height_orig), &(args_info->height_given),
               &(local_args_info.height_given), optarg, 0, 0, ARG_INT,
               check_ambiguity, override, 0, 0,
-              "height", 'h',
+              "height", 'H',
               additional_error))
             goto failure;
         
@@ -565,12 +571,6 @@ cmdline_parser_internal (
           break;
 
         case 0:	/* Long option with no short option */
-          if (strcmp (long_options[option_index].name, "help") == 0) {
-            cmdline_parser_print_help ();
-            cmdline_parser_free (&local_args_info);
-            exit (EXIT_SUCCESS);
-          }
-
           if (strcmp (long_options[option_index].name, "detailed-help") == 0) {
             cmdline_parser_print_detailed_help ();
             cmdline_parser_free (&local_args_info);

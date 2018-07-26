@@ -9,4 +9,5 @@
 #include <ncurses.h>
 
 // Project Libraries
-#include <cmdline-life.h>
+#include "cmdline-life.h"
+#include "updatemap.h"

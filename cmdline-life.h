@@ -44,7 +44,7 @@ struct gengetopt_args_info
   const char *help_help; /**< @brief Print help and exit help description.  */
   const char *detailed_help_help; /**< @brief Print help, including all details and hidden options, and exit help description.  */
   const char *version_help; /**< @brief Print version and exit help description.  */
-  int ruleint_arg;	/**< @brief Specify rule-int on command line.  */
+  int ruleint_arg;	/**< @brief Specify rule-int on command line (default='6152').  */
   char * ruleint_orig;	/**< @brief Specify rule-int on command line original value given at command line.  */
   const char *ruleint_help; /**< @brief Specify rule-int on command line help description.  */
   int width_arg;	/**< @brief Specify width.  */
