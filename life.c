@@ -1,5 +1,11 @@
 #include "life.h"
 
+char * update_map (const char * base_map, const int width, const int height, char livecell, char deadcell, const int ruleint) {
+  char * ret = malloc((width * height)+1);
+  memcpy(ret, base_map, (width*height)+1);
+  return ret;
+}
+
 int main (int argc, char * argv[]) {
   unsigned int RULE = 0;
   int rule_size = 0;
@@ -15,18 +21,12 @@ int main (int argc, char * argv[]) {
   int ch = 0;
   int width = 36;
   int height = 18;
-  char * base_map = NULL;
-  base_map = malloc(height * width+1);
-  if (base_map == NULL) {
-    fprintf(stderr, "Ran out of memory\n");
-    exit(EXIT_FAILURE);
-  }
-  memset(base_map, 0, height * width + 1);
-  memset(base_map, '.', height * width);
+  int livecell = '#';
+  int deadcell = '.';
   char * map = NULL;
-  map = malloc(height * width+1);
+  map = malloc((height * width)+1);
   memset(map, 0, height * width + 1);
-  memcpy(map, base_map, height * width);
+  memset(map, deadcell, height * width);
   int x = 3;
   int y = 3;
   int * invent_item_count = NULL;
@@ -57,13 +57,18 @@ int main (int argc, char * argv[]) {
     } else if (ch == KEY_C3) {
       if (x < width - 1) x++;
       if (y < height - 1) y++;
+    } else if (ch == ' ') {
+      if (map[y*width+x] == deadcell) {
+	map[y*width+x] = livecell;
+      } else if (map[y*width+x] == livecell) {
+	map[(y*width)+x] = deadcell;
+      }
     }
-    memcpy(map, base_map, height * width);
     for (int i = 0; i < height; ++i) {
       if (i == y) {
-	printw("%.*s", x-1, map + (i * width));
+	printw("%.*s", x, map + (y * width));
 	standout();
-	printw("%c", *(map + (i * width) + x));
+	printw("%c", *(map + (y * width) + x));
 	standend();
 	printw("%.*s\n", width-x, (map + (i * width) + x + 1));
       } else {
@@ -74,7 +79,6 @@ int main (int argc, char * argv[]) {
     ch = getch();
   }
   endwin();
-  free(base_map);
   free(map);
   exit(EXIT_SUCCESS);
 }
