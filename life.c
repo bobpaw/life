@@ -18,6 +18,7 @@ int main (int argc, char * argv[]) {
   int playing = 0;
   unsigned int delaymax = 10;
   unsigned int delay = 0; // Counts up to 10 so display is slow
+  unsigned long long generation = 0; // Store current generation number
   int livecell = '#';
   int deadcell = '.';
   if (args_info.width_given) width = args_info.width_arg;
@@ -88,12 +89,13 @@ int main (int argc, char * argv[]) {
         printw("%.*s\n", width, (map + (i * width)));
       }
     }
-    printw("(%d, %d)\n", x, y);
+    printw("(%d, %d) Generation: %d\n", x, y, generation);
     refresh();
     if (playing == TRUE) {
       delay++;
       if (delay == delaymax) {
         delay = 0;
+        generation++;
         update_map(map, width, height, livecell, deadcell, RULE);
       }
     }
