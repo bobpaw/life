@@ -1,0 +1,5 @@
+args "--file-name=cmdline-life"
+option "ruleint" r "Specify rule-int on command line" typestr="Rule integer" int optional
+option "width" w "Specify width" typestr="width" int optional
+option "height" h "Specify height" typestr="height" int optional
+option "delay" d "Specify delay time" details="Specify delay time, multiplied by 10ms" typestr="delay" int optional

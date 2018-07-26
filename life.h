@@ -7,3 +7,6 @@
 
 // Module Libraries
 #include <ncurses.h>
+
+// Project Libraries
+#include <cmdline-life.h>
