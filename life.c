@@ -1,9 +1,13 @@
 #include "life.h"
 
-char * update_map (const char * base_map, const int width, const int height, char livecell, char deadcell, const int ruleint) {
-  char * ret = malloc((width * height)+1);
-  memcpy(ret, base_map, (width*height)+1);
-  return ret;
+char * update_map (char * base_map, const int width, const int height, char livecell, char deadcell, const int ruleint) {
+  char * intermap = malloc((width * height)+1);
+  memcpy(intermap, base_map, (width*height)+1);
+  // Change intermap and stuff
+  // Rewrite map
+  memcpy(base_map, intermap, (width*height)+1);
+  free(intermap);
+  return base_map;
 }
 
 int main (int argc, char * argv[]) {
@@ -68,15 +72,16 @@ int main (int argc, char * argv[]) {
       if (i == y) {
 	printw("%.*s", x, map + (y * width));
 	standout();
-	printw("%c", *(map + (y * width) + x));
+	printw("%.1s", map + (y * width) + x);
 	standend();
-	printw("%.*s\n", width-x, (map + (i * width) + x + 1));
+	printw("%.*s\n", width-(x+1), (map + (i * width) + x + 1));
       } else {
 	printw("%.*s\n", width, (map + (i * width)));
       }
     }
     refresh();
     ch = getch();
+    usleep(50);
   }
   endwin();
   free(map);
