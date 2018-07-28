@@ -108,18 +108,18 @@ int main (int argc, char * argv[]) {
         timeout(50);
       } else if (ch == 'c') {
         memset(map, deadcell, width*height);
-      } else if (ch == '.') {
-        delaymax -= (delaymax > 1 ? 1 : 0);
       } else if (ch == ',') {
+        delaymax -= (delaymax > 1 ? 1 : 0);
+      } else if (ch == '.') {
         delaymax += (delaymax < 20 ? 1 : 0);
       }
     } else {
       if (ch == '\n') {
         playing = FALSE;
         timeout(-1);
-      } else if (ch == '.') {
-        delaymax -= (delaymax > 1 ? 1 : 0);
       } else if (ch == ',') {
+        delaymax -= (delaymax > 1 ? 1 : 0);
+      } else if (ch == '.') {
         delaymax += (delaymax < 20 ? 1 : 0);
       }
     }
@@ -134,7 +134,7 @@ int main (int argc, char * argv[]) {
         printw("%.*s\n", width, (map + (i * width)));
       }
     }
-    printw("(%d, %d) Generation: %d\tDelay Time: %d\n", x, y, generation, delaymax);
+    printw("(%d, %d)\t\tGeneration: %d\t\tDelay Time: %d\n", x, y, generation, delaymax);
     refresh();
     if (playing == TRUE) {
       delay++;
