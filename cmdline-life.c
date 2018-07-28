@@ -38,10 +38,16 @@ const char *gengetopt_args_info_detailed_help[] = {
   "      --detailed-help  Print help, including all details and hidden options,\n                         and exit",
   "  -V, --version        Print version and exit",
   "  -r, --ruleint=rule   Specify rule-int on command line  (default=`6152')",
-  "  -W, --width=width    Specify width",
-  "  -H, --height=height  Specify height",
-  "  -d, --delay=delay    Specify delay time",
+  "  -d, --delay=INT      Specify delay time",
   "  Specify delay time, multiplied by 10ms",
+  "\nDimensions:",
+  "  -W, --width=INT      Specify width",
+  "  -H, --height=INT     Specify height",
+  "  -m, --maximize       Maximize dimensions for terminal",
+  "  If specified, cancels out height and/or width options",
+  "\nCharacters:",
+  "  -L, --live=CH        Character for a live cell",
+  "  -D, --dead=CH        Character for a dead cell",
     0
 };
 
@@ -53,15 +59,21 @@ init_help_array(void)
   gengetopt_args_info_help[2] = gengetopt_args_info_detailed_help[2];
   gengetopt_args_info_help[3] = gengetopt_args_info_detailed_help[3];
   gengetopt_args_info_help[4] = gengetopt_args_info_detailed_help[4];
-  gengetopt_args_info_help[5] = gengetopt_args_info_detailed_help[5];
-  gengetopt_args_info_help[6] = gengetopt_args_info_detailed_help[6];
-  gengetopt_args_info_help[7] = 0; 
+  gengetopt_args_info_help[5] = gengetopt_args_info_detailed_help[6];
+  gengetopt_args_info_help[6] = gengetopt_args_info_detailed_help[7];
+  gengetopt_args_info_help[7] = gengetopt_args_info_detailed_help[8];
+  gengetopt_args_info_help[8] = gengetopt_args_info_detailed_help[9];
+  gengetopt_args_info_help[9] = gengetopt_args_info_detailed_help[11];
+  gengetopt_args_info_help[10] = gengetopt_args_info_detailed_help[12];
+  gengetopt_args_info_help[11] = gengetopt_args_info_detailed_help[13];
+  gengetopt_args_info_help[12] = 0; 
   
 }
 
-const char *gengetopt_args_info_help[8];
+const char *gengetopt_args_info_help[13];
 
 typedef enum {ARG_NO
+  , ARG_STRING
   , ARG_INT
 } cmdline_parser_arg_type;
 
@@ -85,9 +97,12 @@ void clear_given (struct gengetopt_args_info *args_info)
   args_info->detailed_help_given = 0 ;
   args_info->version_given = 0 ;
   args_info->ruleint_given = 0 ;
+  args_info->delay_given = 0 ;
   args_info->width_given = 0 ;
   args_info->height_given = 0 ;
-  args_info->delay_given = 0 ;
+  args_info->maximize_given = 0 ;
+  args_info->live_given = 0 ;
+  args_info->dead_given = 0 ;
 }
 
 static
@@ -96,9 +111,13 @@ void clear_args (struct gengetopt_args_info *args_info)
   FIX_UNUSED (args_info);
   args_info->ruleint_arg = 6152;
   args_info->ruleint_orig = NULL;
+  args_info->delay_orig = NULL;
   args_info->width_orig = NULL;
   args_info->height_orig = NULL;
-  args_info->delay_orig = NULL;
+  args_info->live_arg = NULL;
+  args_info->live_orig = NULL;
+  args_info->dead_arg = NULL;
+  args_info->dead_orig = NULL;
   
 }
 
@@ -111,9 +130,12 @@ void init_args_info(struct gengetopt_args_info *args_info)
   args_info->detailed_help_help = gengetopt_args_info_detailed_help[1] ;
   args_info->version_help = gengetopt_args_info_detailed_help[2] ;
   args_info->ruleint_help = gengetopt_args_info_detailed_help[3] ;
-  args_info->width_help = gengetopt_args_info_detailed_help[4] ;
-  args_info->height_help = gengetopt_args_info_detailed_help[5] ;
-  args_info->delay_help = gengetopt_args_info_detailed_help[6] ;
+  args_info->delay_help = gengetopt_args_info_detailed_help[4] ;
+  args_info->width_help = gengetopt_args_info_detailed_help[7] ;
+  args_info->height_help = gengetopt_args_info_detailed_help[8] ;
+  args_info->maximize_help = gengetopt_args_info_detailed_help[9] ;
+  args_info->live_help = gengetopt_args_info_detailed_help[12] ;
+  args_info->dead_help = gengetopt_args_info_detailed_help[13] ;
   
 }
 
@@ -207,9 +229,13 @@ cmdline_parser_release (struct gengetopt_args_info *args_info)
 {
 
   free_string_field (&(args_info->ruleint_orig));
+  free_string_field (&(args_info->delay_orig));
   free_string_field (&(args_info->width_orig));
   free_string_field (&(args_info->height_orig));
-  free_string_field (&(args_info->delay_orig));
+  free_string_field (&(args_info->live_arg));
+  free_string_field (&(args_info->live_orig));
+  free_string_field (&(args_info->dead_arg));
+  free_string_field (&(args_info->dead_orig));
   
   
 
@@ -248,12 +274,18 @@ cmdline_parser_dump(FILE *outfile, struct gengetopt_args_info *args_info)
     write_into_file(outfile, "version", 0, 0 );
   if (args_info->ruleint_given)
     write_into_file(outfile, "ruleint", args_info->ruleint_orig, 0);
+  if (args_info->delay_given)
+    write_into_file(outfile, "delay", args_info->delay_orig, 0);
   if (args_info->width_given)
     write_into_file(outfile, "width", args_info->width_orig, 0);
   if (args_info->height_given)
     write_into_file(outfile, "height", args_info->height_orig, 0);
-  if (args_info->delay_given)
-    write_into_file(outfile, "delay", args_info->delay_orig, 0);
+  if (args_info->maximize_given)
+    write_into_file(outfile, "maximize", 0, 0 );
+  if (args_info->live_given)
+    write_into_file(outfile, "live", args_info->live_orig, 0);
+  if (args_info->dead_given)
+    write_into_file(outfile, "dead", args_info->dead_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -389,6 +421,7 @@ int update_arg(void *field, char **orig_field,
   char *stop_char = 0;
   const char *val = value;
   int found;
+  char **string_field;
   FIX_UNUSED (field);
 
   stop_char = 0;
@@ -421,6 +454,14 @@ int update_arg(void *field, char **orig_field,
   switch(arg_type) {
   case ARG_INT:
     if (val) *((int *)field) = strtol (val, &stop_char, 0);
+    break;
+  case ARG_STRING:
+    if (val) {
+      string_field = (char **)field;
+      if (!no_free && *string_field)
+        free (*string_field); /* free previous string */
+      *string_field = gengetopt_strdup (val);
+    }
     break;
   default:
     break;
@@ -499,13 +540,16 @@ cmdline_parser_internal (
         { "detailed-help",	0, NULL, 0 },
         { "version",	0, NULL, 'V' },
         { "ruleint",	1, NULL, 'r' },
+        { "delay",	1, NULL, 'd' },
         { "width",	1, NULL, 'W' },
         { "height",	1, NULL, 'H' },
-        { "delay",	1, NULL, 'd' },
+        { "maximize",	0, NULL, 'm' },
+        { "live",	1, NULL, 'L' },
+        { "dead",	1, NULL, 'D' },
         { 0,  0, 0, 0 }
       };
 
-      c = getopt_long (argc, argv, "hVr:W:H:d:", long_options, &option_index);
+      c = getopt_long (argc, argv, "hVr:d:W:H:mL:D:", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
@@ -569,14 +613,38 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'd':	/* Specify delay time.  */
+        case 'm':	/* Maximize dimensions for terminal.  */
         
         
-          if (update_arg( (void *)&(args_info->delay_arg), 
-               &(args_info->delay_orig), &(args_info->delay_given),
-              &(local_args_info.delay_given), optarg, 0, 0, ARG_INT,
+          if (update_arg( 0 , 
+               0 , &(args_info->maximize_given),
+              &(local_args_info.maximize_given), optarg, 0, 0, ARG_NO,
               check_ambiguity, override, 0, 0,
-              "delay", 'd',
+              "maximize", 'm',
+              additional_error))
+            goto failure;
+        
+          break;
+        case 'L':	/* Character for a live cell.  */
+        
+        
+          if (update_arg( (void *)&(args_info->live_arg), 
+               &(args_info->live_orig), &(args_info->live_given),
+              &(local_args_info.live_given), optarg, 0, 0, ARG_STRING,
+              check_ambiguity, override, 0, 0,
+              "live", 'L',
+              additional_error))
+            goto failure;
+        
+          break;
+        case 'D':	/* Character for a dead cell.  */
+        
+        
+          if (update_arg( (void *)&(args_info->dead_arg), 
+               &(args_info->dead_orig), &(args_info->dead_given),
+              &(local_args_info.dead_given), optarg, 0, 0, ARG_STRING,
+              check_ambiguity, override, 0, 0,
+              "dead", 'D',
               additional_error))
             goto failure;
         
