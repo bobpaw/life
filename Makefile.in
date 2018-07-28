@@ -103,7 +103,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includedir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_life_OBJECTS = life-life.$(OBJEXT) life-cmdline-life.$(OBJEXT)
+am_life_OBJECTS = life-life.$(OBJEXT) life-cmdline-life.$(OBJEXT) \
+	life-updatemap.$(OBJEXT) life-menus.$(OBJEXT)
 life_OBJECTS = $(am_life_OBJECTS)
 life_LDADD = $(LDADD)
 life_LINK = $(CCLD) $(life_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
@@ -306,9 +307,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_OPTIONS = gnu
-life_SOURCES = life.c cmdline-life.c
+life_SOURCES = life.c cmdline-life.c updatemap.c menus.c
 life_CFLAGS = -I$(srcdir)
-include_HEADERS = life.h updatemap.h cmdline-life.h
+include_HEADERS = life.h updatemap.h menus.h cmdline-life.h
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -417,6 +418,8 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/life-cmdline-life.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/life-life.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/life-menus.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/life-updatemap.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -459,6 +462,34 @@ life-cmdline-life.obj: cmdline-life.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cmdline-life.c' object='life-cmdline-life.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(life_CFLAGS) $(CFLAGS) -c -o life-cmdline-life.obj `if test -f 'cmdline-life.c'; then $(CYGPATH_W) 'cmdline-life.c'; else $(CYGPATH_W) '$(srcdir)/cmdline-life.c'; fi`
+
+life-updatemap.o: updatemap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(life_CFLAGS) $(CFLAGS) -MT life-updatemap.o -MD -MP -MF $(DEPDIR)/life-updatemap.Tpo -c -o life-updatemap.o `test -f 'updatemap.c' || echo '$(srcdir)/'`updatemap.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/life-updatemap.Tpo $(DEPDIR)/life-updatemap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='updatemap.c' object='life-updatemap.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(life_CFLAGS) $(CFLAGS) -c -o life-updatemap.o `test -f 'updatemap.c' || echo '$(srcdir)/'`updatemap.c
+
+life-updatemap.obj: updatemap.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(life_CFLAGS) $(CFLAGS) -MT life-updatemap.obj -MD -MP -MF $(DEPDIR)/life-updatemap.Tpo -c -o life-updatemap.obj `if test -f 'updatemap.c'; then $(CYGPATH_W) 'updatemap.c'; else $(CYGPATH_W) '$(srcdir)/updatemap.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/life-updatemap.Tpo $(DEPDIR)/life-updatemap.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='updatemap.c' object='life-updatemap.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(life_CFLAGS) $(CFLAGS) -c -o life-updatemap.obj `if test -f 'updatemap.c'; then $(CYGPATH_W) 'updatemap.c'; else $(CYGPATH_W) '$(srcdir)/updatemap.c'; fi`
+
+life-menus.o: menus.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(life_CFLAGS) $(CFLAGS) -MT life-menus.o -MD -MP -MF $(DEPDIR)/life-menus.Tpo -c -o life-menus.o `test -f 'menus.c' || echo '$(srcdir)/'`menus.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/life-menus.Tpo $(DEPDIR)/life-menus.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='menus.c' object='life-menus.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(life_CFLAGS) $(CFLAGS) -c -o life-menus.o `test -f 'menus.c' || echo '$(srcdir)/'`menus.c
+
+life-menus.obj: menus.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(life_CFLAGS) $(CFLAGS) -MT life-menus.obj -MD -MP -MF $(DEPDIR)/life-menus.Tpo -c -o life-menus.obj `if test -f 'menus.c'; then $(CYGPATH_W) 'menus.c'; else $(CYGPATH_W) '$(srcdir)/menus.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/life-menus.Tpo $(DEPDIR)/life-menus.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='menus.c' object='life-menus.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(life_CFLAGS) $(CFLAGS) -c -o life-menus.obj `if test -f 'menus.c'; then $(CYGPATH_W) 'menus.c'; else $(CYGPATH_W) '$(srcdir)/menus.c'; fi`
 install-includeHEADERS: $(include_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(include_HEADERS)'; test -n "$(includedir)" || list=; \

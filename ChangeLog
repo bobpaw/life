@@ -1,3 +1,37 @@
+2018-07-17  Aiden Woodruff  <aiden.woodruff@gmail.com>
+
+	* update_map.c: File created
+	(update_map): Function moved from update_map.h
+	Fixed error with height
+	Use strcpy instead of memcpy
+
+	* update_map.h: Added #define guard
+
+	* menus.h: File added
+
+	* menus.c: File added
+	(print_copying_warranty): Print out warranty (part 15) to any window.
+
+	* life.h: Don't need unistd.h
+	Include menus.h
+
+	* life.c: Change uppercase characters to lowercase
+	Added stars on multiline boilerplate
+	Added windows for the stat bar and entry line
+	Get winsize from COLS and LINES instead of getmaxyx macro
+	Normal timeout variable added
+	TRUE and FALSE definitions removed
+	Added macro to pretty-print text onto status bar
+	Added macro to run function on list of items
+	Don't need to duplicate things that run when running is TRUE and when it's FALSE, ie ',' and '.' tests
+	Added runtime RULE change
+	Added help key
+	Added Warranty print key
+	Game is printed onto board WINDOW, not main screen
+	(read_num): Read a number from (usually) entry WINDOW
+
+	* Makefile.am: Added new sources and new headers
+
 2018-02-25  Aiden Woodruff  <aiden.woodruff@gmail.com>
 
 	* README.md: File created.
