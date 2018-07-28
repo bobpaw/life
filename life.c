@@ -27,14 +27,19 @@ int main (int argc, char * argv[]) {
   unsigned int RULE = 0;
   struct gengetopt_args_info args_info;
   if (cmdline_parser(argc, argv, &args_info) != 0) exit(EXIT_FAILURE);
+  initscr();
+  raw();
+  curs_set(0);
+  keypad(stdscr, TRUE);
+  noecho();
   RULE = args_info.ruleint_arg;
   srand(time(NULL));
   int ch = 0;
   int width = 36;
   int height = 18;
   int playing = 0;
-  unsigned int delaymax = 10;
-  unsigned int delay = 0; // Counts up to 10 so display is slow
+  int delaymax = 10;
+  int delay = 0; // Counts up to 10 so display is slow
   unsigned long long generation = 0; // Store current generation number
   int livecell = '#';
   int deadcell = '.';
@@ -57,6 +62,11 @@ int main (int argc, char * argv[]) {
       deadcell = (int) args_info.dead_arg[0];
     }
   }
+  if (args_info.maximize_given) {
+    getmaxyx(stdscr, height, width);
+    width -= 1;
+    height -= 2;
+  }
   cmdline_parser_free(&args_info);
   char * map = NULL;
   map = malloc((height * width)+1);
@@ -64,12 +74,6 @@ int main (int argc, char * argv[]) {
   memset(map, deadcell, height * width);
   int x = width/2;
   int y = height/2;
-  int * invent_item_count = NULL;
-  initscr();
-  raw();
-  curs_set(0);
-  keypad(stdscr, TRUE);
-  noecho();
   while (ch != 'q') {
     erase();
     if (playing == FALSE) {
@@ -104,11 +108,19 @@ int main (int argc, char * argv[]) {
         timeout(50);
       } else if (ch == 'c') {
         memset(map, deadcell, width*height);
+      } else if (ch == '.') {
+        delaymax -= (delaymax > 1 ? 1 : 0);
+      } else if (ch == ',') {
+        delaymax += (delaymax < 20 ? 1 : 0);
       }
     } else {
       if (ch == '\n') {
         playing = FALSE;
         timeout(-1);
+      } else if (ch == '.') {
+        delaymax -= (delaymax > 1 ? 1 : 0);
+      } else if (ch == ',') {
+        delaymax += (delaymax < 20 ? 1 : 0);
       }
     }
     for (int i = 0; i < height; ++i) {
@@ -122,11 +134,11 @@ int main (int argc, char * argv[]) {
         printw("%.*s\n", width, (map + (i * width)));
       }
     }
-    printw("(%d, %d) Generation: %d\n", x, y, generation);
+    printw("(%d, %d) Generation: %d\tDelay Time: %d\n", x, y, generation, delaymax);
     refresh();
     if (playing == TRUE) {
       delay++;
-      if (delay == delaymax) {
+      if (delay >= delaymax) {
         delay = 0;
         generation++;
         update_map(map, width, height, livecell, deadcell, RULE);
