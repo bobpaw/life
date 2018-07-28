@@ -41,6 +41,22 @@ int main (int argc, char * argv[]) {
   if (args_info.width_given) width = args_info.width_arg;
   if (args_info.height_given) height = args_info.height_arg;
   if (args_info.delay_given) delaymax = args_info.delay_arg;
+  if (args_info.live_given) {
+    if (strlen(args_info.live_arg) > 1) {
+      fprintf(stderr, "Live character must be one character long");
+      exit(EXIT_FAILURE);
+    } else {
+      livecell = (int) args_info.live_arg[0];
+    }
+  }
+  if (args_info.dead_given) {
+    if (strlen(args_info.dead_arg) > 1) {
+      fprintf(stderr, "Dead character must be one character long");
+      exit(EXIT_FAILURE);
+    } else {
+      deadcell = (int) args_info.dead_arg[0];
+    }
+  }
   cmdline_parser_free(&args_info);
   char * map = NULL;
   map = malloc((height * width)+1);

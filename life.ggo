@@ -3,3 +3,5 @@ option "ruleint" r "Specify rule-int on command line" typestr="rule" default="61
 option "width" W "Specify width" typestr="width" int optional
 option "height" H "Specify height" typestr="height" int optional
 option "delay" d "Specify delay time" details="Specify delay time, multiplied by 10ms" typestr="delay" int optional
+option "live" L "Character for a live cell" typestr="live" string optional
+option "dead" D "Character for a dead cell" typestr="dead" string optional
