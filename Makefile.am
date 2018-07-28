@@ -1,6 +1,6 @@
 AM_OPTIONS = gnu
 ncurses_flags = `ncurses5-config --libs` `ncurses5-config --cflags`
-cstd_flag = -std=c99
+CFLAGS = -std=c99
 bin_PROGRAMS = life
 life_SOURCES = life.c cmdline-life.c
 life_CFLAGS = -I$(srcdir) $(ncurses_flags)
