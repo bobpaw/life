@@ -74,15 +74,39 @@ int main (int argc, char * argv[]) {
   unsigned long long generation = 0; // Store current generation number
   int livecell = '#';
   int deadcell = '.';
-  if (args_info.width_given) width = args_info.width_arg;
-  if (args_info.height_given) height = args_info.height_arg;
-  if (args_info.delay_given) delaymax = args_info.delay_arg;
+  if (args_info.width_given) {
+    if (args_info.width_arg > COLS - 1) {
+      width = COLS - 1;
+    } else if (args_info.width_arg < 1) {
+      width = 1;
+    } else {
+      width = args_info.width_arg;
+    }
+  }
+  if (args_info.height_given) {
+    if (args_info.height_arg > LINES - 2) {
+      height = LINES - 2;
+    } else if (args_info.height_arg < 1) {
+      height = 1;
+    } else {
+      height = args_info.height_arg;
+    }
+  }
+  if (args_info.delay_given) {
+    if (args_info.delay_arg > 20) {
+      delaymax = 20;
+    } else if (args_info.delay_arg < 1) {
+      delaymax = 1;
+    } else {
+      delaymax = args_info.delay_arg;
+    }
+  }
   if (args_info.live_given) {
     if (strlen(args_info.live_arg) > 1) {
       fprintf(stderr, "Live character must be one character long");
       exit(EXIT_FAILURE);
     } else {
-      livecell = (int) args_info.live_arg[0];
+      livecell = (isprint((int) args_info.live_arg[0]) != 0 ? (int) args_info.live_arg[0] : livecell);
     }
   }
   if (args_info.dead_given) {
@@ -90,7 +114,7 @@ int main (int argc, char * argv[]) {
       fprintf(stderr, "Dead character must be one character long");
       exit(EXIT_FAILURE);
     } else {
-      deadcell = (int) args_info.dead_arg[0];
+      deadcell = (isprint((int) args_info.dead_arg[0]) != 0 ? (int) args_info.dead_arg[0] : deadcell);
     }
   }
   if (args_info.maximize_given) {
@@ -230,7 +254,12 @@ int main (int argc, char * argv[]) {
       ch -= ('A' - 'a');
     }
   }
+  foreach(werase, 4, stdscr, board, stat_bar, entry);
+  foreach(delwin, 3, entry, stat_bar, board);
+  board = stat_bar = entry = NULL;
   endwin();
+  delwin(stdscr);
   free(map);
+  map = NULL;
   exit(EXIT_SUCCESS);
 }

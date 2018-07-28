@@ -47,6 +47,9 @@ struct gengetopt_args_info
   int ruleint_arg;	/**< @brief Specify rule-int on command line (default='6152').  */
   char * ruleint_orig;	/**< @brief Specify rule-int on command line original value given at command line.  */
   const char *ruleint_help; /**< @brief Specify rule-int on command line help description.  */
+  int delay_arg;	/**< @brief Specify delay time.  */
+  char * delay_orig;	/**< @brief Specify delay time original value given at command line.  */
+  const char *delay_help; /**< @brief Specify delay time help description.  */
   int width_arg;	/**< @brief Specify width.  */
   char * width_orig;	/**< @brief Specify width original value given at command line.  */
   const char *width_help; /**< @brief Specify width help description.  */

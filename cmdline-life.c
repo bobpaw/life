@@ -533,6 +533,18 @@ cmdline_parser_internal (
             goto failure;
         
           break;
+        case 'd':	/* Specify delay time.  */
+        
+        
+          if (update_arg( (void *)&(args_info->delay_arg), 
+               &(args_info->delay_orig), &(args_info->delay_given),
+              &(local_args_info.delay_given), optarg, 0, 0, ARG_INT,
+              check_ambiguity, override, 0, 0,
+              "delay", 'd',
+              additional_error))
+            goto failure;
+        
+          break;
         case 'W':	/* Specify width.  */
         
         

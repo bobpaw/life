@@ -101,7 +101,8 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includedir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(manmdir)" \
+	"$(DESTDIR)$(includedir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_life_OBJECTS = life-life.$(OBJEXT) life-cmdline-life.$(OBJEXT) \
 	life-updatemap.$(OBJEXT) life-menus.$(OBJEXT)
@@ -175,6 +176,9 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
+manmdir = $(mandir)/manm
+NROFF = nroff
+MANS = $(man_MANS)
 HEADERS = $(include_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
 	$(LISP)config.h.in
@@ -200,7 +204,7 @@ CSCOPE = cscope
 AM_RECURSIVE_TARGETS = cscope
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in AUTHORS \
 	COPYING ChangeLog INSTALL NEWS README compile depcomp \
-	install-sh missing
+	install-sh mdate-sh missing texinfo.tex
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -310,6 +314,8 @@ AM_OPTIONS = gnu
 life_SOURCES = life.c cmdline-life.c updatemap.c menus.c
 life_CFLAGS = -I$(srcdir)
 include_HEADERS = life.h updatemap.h menus.h cmdline-life.h
+man_MANS = life.man
+EXTRA_DIST = $(man_MANS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -490,6 +496,49 @@ life-menus.obj: menus.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='menus.c' object='life-menus.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(life_CFLAGS) $(CFLAGS) -c -o life-menus.obj `if test -f 'menus.c'; then $(CYGPATH_W) 'menus.c'; else $(CYGPATH_W) '$(srcdir)/menus.c'; fi`
+install-manm: $(man_MANS)
+	@$(NORMAL_INSTALL)
+	@list1=''; \
+	list2='$(man_MANS)'; \
+	test -n "$(manmdir)" \
+	  && test -n "`echo $$list1$$list2`" \
+	  || exit 0; \
+	echo " $(MKDIR_P) '$(DESTDIR)$(manmdir)'"; \
+	$(MKDIR_P) "$(DESTDIR)$(manmdir)" || exit 1; \
+	{ for i in $$list1; do echo "$$i"; done;  \
+	if test -n "$$list2"; then \
+	  for i in $$list2; do echo "$$i"; done \
+	    | sed -n '/\.m[a-z]*$$/p'; \
+	fi; \
+	} | while read p; do \
+	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; echo "$$p"; \
+	done | \
+	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^m][0-9a-z]*$$,m,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
+	sed 'N;N;s,\n, ,g' | { \
+	list=; while read file base inst; do \
+	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
+	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(manmdir)/$$inst'"; \
+	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(manmdir)/$$inst" || exit $$?; \
+	  fi; \
+	done; \
+	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
+	while read files; do \
+	  test -z "$$files" || { \
+	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(manmdir)'"; \
+	    $(INSTALL_DATA) $$files "$(DESTDIR)$(manmdir)" || exit $$?; }; \
+	done; }
+
+uninstall-manm:
+	@$(NORMAL_UNINSTALL)
+	@list=''; test -n "$(manmdir)" || exit 0; \
+	files=`{ for i in $$list; do echo "$$i"; done; \
+	l2='$(man_MANS)'; for i in $$l2; do echo "$$i"; done | \
+	  sed -n '/\.m[a-z]*$$/p'; \
+	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^m][0-9a-z]*$$,m,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
+	dir='$(DESTDIR)$(manmdir)'; $(am__uninstall_files_from_dir)
 install-includeHEADERS: $(include_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(include_HEADERS)'; test -n "$(includedir)" || list=; \
@@ -736,9 +785,9 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(HEADERS) config.h
+all-am: Makefile $(PROGRAMS) $(MANS) $(HEADERS) config.h
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includedir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(manmdir)" "$(DESTDIR)$(includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -794,7 +843,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-includeHEADERS
+install-data-am: install-includeHEADERS install-man
 
 install-dvi: install-dvi-am
 
@@ -810,7 +859,7 @@ install-info: install-info-am
 
 install-info-am:
 
-install-man:
+install-man: install-manm
 
 install-pdf: install-pdf-am
 
@@ -841,7 +890,10 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-includeHEADERS
+uninstall-am: uninstall-binPROGRAMS uninstall-includeHEADERS \
+	uninstall-man
+
+uninstall-man: uninstall-manm
 
 .MAKE: all install-am install-strip
 
@@ -856,12 +908,13 @@ uninstall-am: uninstall-binPROGRAMS uninstall-includeHEADERS
 	install-data-am install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am \
 	install-includeHEADERS install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
+	install-man install-manm install-pdf install-pdf-am install-ps \
 	install-ps-am install-strip installcheck installcheck-am \
 	installdirs maintainer-clean maintainer-clean-generic \
 	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
 	ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-includeHEADERS
+	uninstall-binPROGRAMS uninstall-includeHEADERS uninstall-man \
+	uninstall-manm
 
 .PRECIOUS: Makefile
 
