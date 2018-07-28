@@ -1,31 +1,29 @@
 /*
 
- * An arbitrary cellular automata model using ncurses
- * Copyright (C) 2018 Aiden Woodruff
+  * An arbitrary cellular automata model using ncurses
+  * Copyright (C) 2018 Aiden Woodruff
 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+  * This program is free software: you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+  * the Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+  * This program is distributed in the hope that it will be useful,
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  * GNU General Public License for more details.
 
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  * You should have received a copy of the GNU General Public License
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
- */
+  */
 #include "life.h"
 
 #ifndef stat_bar_print
 // Print text to status bar in the nice way, without erasing or refreshing
 #define stat_bar_print(win,fmt,...)                                     \
-  wstandout(win);                                                       \
   wprintw(win, fmt, ##__VA_ARGS__);                                     \
-  for (int _i = getcurx(win); _i < COLS; _i++) waddch(win, ' ');        \
-  wstandend(stat_bar);
+  for (int _i = getcurx(win); _i < COLS; _i++) waddch(win, ' ');
 #endif
 
 #ifndef foreach
@@ -125,6 +123,7 @@ int main (int argc, char * argv[]) {
   WINDOW * board = newwin(height, width + 1, 0, 0);
   WINDOW * stat_bar = newwin(1, 0, LINES - 2, 0);
   WINDOW * entry = newwin(1, 0, LINES - 1, 0);
+  wstandout(stat_bar);
   char * map = NULL;
   map = malloc((height * width)+1);
   memset(map, 0, height * width + 1);
@@ -198,6 +197,7 @@ int main (int argc, char * argv[]) {
         printw(". - Increase delay time\n");
         printw("R - Input a rule-int\n");
         // TODO printw("Ctrl+R - Open the fancy rule menu\n");
+        printw("Ctrl+L - Redraw screen\n");
         printw("W - Show warranty\n");
         printw("V - Print version\n");
         foreach(wnoutrefresh, 3, stdscr, entry, stat_bar);
@@ -226,6 +226,8 @@ int main (int argc, char * argv[]) {
       delaymax -= (delaymax > 1 ? 1 : 0);
     } else if (ch == '.') {
       delaymax += (delaymax < 20 ? 1 : 0);
+    } else if (strcmp(keyname(ch), "^L") == 0) {
+      foreach(wclear, 4, stdscr, entry, stat_bar, board);
     }
     for (int i = 0; i < height; ++i) {
       if (i == y) {
@@ -238,7 +240,7 @@ int main (int argc, char * argv[]) {
         wprintw(board, "%.*s\n", width, (map + (i * width)));
       }
     }
-    stat_bar_print(stat_bar, "(%d, %d)\t\tGeneration: %d\t\tDelay Time: %d\n", x, y, generation, delaymax);
+    stat_bar_print(stat_bar, "(%d, %d)\t\tGeneration: %d\t\tDelay Time: %d", x, y, generation, delaymax);
     foreach(wnoutrefresh, 4, stdscr, board, entry, stat_bar);
     doupdate();
     if (playing == TRUE) {
