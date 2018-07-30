@@ -1,0 +1,87 @@
+\input texinfo
+@setfilename life.info
+@include version.texi
+@settitle Life, version @value{VERSION}
+@copying
+
+This is a manual for the life program (@value{VERSION} @value{UPDATED}).
+
+Copyright @copyright{} 2018 Aiden Woodruff.
+
+@end copying
+
+@titlepage
+@title Life
+@author Aiden Woodruff
+
+
+
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@contents
+
+@ifnottex
+@node Top
+@top Life manual
+
+This is a manual for the life program.
+@end ifnottex
+
+
+@menu
+* First Chapter::       How to Navigate the Game
+* Second Chapter::      Invoking life
+* Index::               Index
+@end menu
+
+@node First Chapter
+@chapter How to Navigate the Game
+
+@cindex First Chapter
+
+
+
+This chapter explains how to navigate the main game area.
+
+@insertcopying
+@node Second Chapter
+@chapter Invoking life
+This chapter explains the different command line options you can supply.
+@cindex First Chapter
+
+life [OPTIONS]...
+
+Valid Options:
+
+
+      -h, --help           Print help and exit
+      --detailed-help  Print help, including all details and hidden options,
+                         and exit
+  -V, --version        Print version and exit
+  -r, --ruleint=rule   Specify rule-int on command line  (default=`6152')
+  -d, --delay=INT      Specify delay time
+                       If delay time is less than 1, it will be set to 1
+                       If it's set to more than 20, it wil lbe set to 20
+
+Dimensions:
+  -W, --width=INT      Specify width
+  -H, --height=INT     Specify height
+                       If height or width are greater than terminal size, they are maximized.
+  -m, --maximize       Maximize dimensions for terminal
+
+Characters:
+  -L, --live=CH      Character for a live cell
+  -D, --dead=CH      Character for a dead cell
+                     Where CH is a single letter.
+@insertcopying
+@node Index
+@unnumbered Index
+
+
+
+@printindex cp
+@insertcopying
+@bye

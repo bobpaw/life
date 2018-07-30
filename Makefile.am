@@ -4,4 +4,5 @@ life_SOURCES = life.c cmdline-life.c updatemap.c menus.c
 life_CFLAGS = -I$(srcdir) -Wall -pedantic
 include_HEADERS = life.h updatemap.h menus.h cmdline-life.h life-macros.h
 man_MANS = life.6
+info_TEXINFOS = life.texi
 EXTRA_DIST = $(man_MANS)
