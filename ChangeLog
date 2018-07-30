@@ -1,3 +1,42 @@
+2018-07-29  Aiden Woodruff  <aiden.woodruff@gmail.com>
+
+	* NEWS: Added version 1.4.1 release date
+
+	* life.c (read_num): Moved to menus.c
+	Added has macro to test for bit
+	Set max width to COLS (from COLS-1)
+	board window is now whole screen
+	Set keypad to true only on board
+	Use foreach on erase at beginning of main while
+	Only set timeout for board window
+	Call fancy_rules function on C-R
+	Moved help section to menus.c (print_help)
+	Don't print lines on screen with wprintw, use mvwaddnstr
+	Use mvwchgat for current (x, y) highlighting
+	Only getch from board
+
+	* menus.c (print_copying_warranty): Don't capture width
+	Use waddstr
+	(read_num): Use getmaxx instead of COLS for width
+	(print_help): Use waddstr
+	Add C-R print
+	(fancy_rules): Function added, should only use one window
+
+	* menus.h: Add declarations
+
+	* rulestoint.py: Removed as function exists in main program
+
+	* README.md: Updated for removal of rulestoint.py
+
+	* README: Now symlink to README.md
+
+	* updatemap.c (update_map): Initialize intermap with strndup instead of malloc
+	Use has macro
+
+	* configure.ac: Updated version as life-1.5.0
+
+	Tarballed life-1.5.0.tar.gz
+
 2018-07-19  Aiden Woodruff  <aiden.woodruff@gmail.com>
 
 	* life.c: Don't blindly accept commandline variables
