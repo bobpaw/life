@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([life], [1.5.1], [aiden.woodruff@gmail.com])
+AC_INIT([life], [1.5.2], [aiden.woodruff@gmail.com])
 AC_CONFIG_SRCDIR([life.c])
 AC_CONFIG_HEADERS([config.h])
 

@@ -29,6 +29,7 @@
 #include <ncurses.h>
 
 // Project Libraries
+#include "life-macros.h"
 #include "cmdline-life.h"
 #include "updatemap.h"
 #include "menus.h"

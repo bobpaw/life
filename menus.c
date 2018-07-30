@@ -19,10 +19,6 @@
  */
 #include "menus.h"
 
-#ifndef has
-#define has(var, bit) ((var & bit) == bit)
-#endif
-
 int print_copying_warranty (WINDOW * win) {
   const char * WARRANTY = "  THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\nAPPLICABLE LAW.\n  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT\nHOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY\nOF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,\nTHE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR\nPURPOSE.\n  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM\nIS WITH YOU.\n  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF\nALL NECESSARY SERVICING, REPAIR OR CORRECTION.";
   return waddstr(win, WARRANTY);
@@ -75,6 +71,7 @@ int fancy_rules (WINDOW * win, int ruleint, int speed) {
     werase(win);
     waddstr(win, "Press space to toggle buttons\n");
     wprintw(win, "Rule int: %d\n", ruleint);
+    waddstr(win, "B012345678/S012345678\n");
     waddch(win, 'B');
     for (int i = 0; i < 9; i++) {
       if (cursor == i) {
@@ -157,13 +154,14 @@ int fancy_rules (WINDOW * win, int ruleint, int speed) {
     } else if (ch == ' ' || ch == '\n') {
       switch (cursor) {
       case 18:
-        return -1;
+        ruleint = -1;
+        done = TRUE;
         break;
       case 19:
         ruleint = 6152;
         break;
       case 20:
-        return ruleint;
+        done = TRUE;
         break;
       default:
         ruleint ^= 1 << cursor;
@@ -174,5 +172,5 @@ int fancy_rules (WINDOW * win, int ruleint, int speed) {
       ch = wgetch(win);
     }
   }
-  ch = 0;
+  return ruleint;
 }

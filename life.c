@@ -21,20 +21,9 @@
 
 #ifndef stat_bar_print
 // Print text to status bar in the nice way, without erasing or refreshing
-#define stat_bar_print(win, fmt,...)                                    \
-  wprintw(win, fmt, ##__VA_ARGS__);                                     \
+#define stat_bar_print(win,...)                                    \
+  wprintw(win, __VA_ARGS__);                                     \
   for (int _i = getcurx(win); _i < COLS; _i++) waddch(win, ' ');
-#endif
-
-#ifndef foreach
-#define foreach(func, count, first,...)                         \
-  {typeof(first) things[] = {__VA_ARGS__};                      \
-    func(first);                                                \
-    for (int _i = 0; _i < count - 1; _i++) func(things[_i]);}
-#endif
-
-#ifndef has
-#define has(var, bit) ((var & bit) == bit)
 #endif
 
 int main (int argc, char * argv[]) {

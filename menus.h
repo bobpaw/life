@@ -23,6 +23,8 @@
 
 #include <ncurses.h>
 
+#include "life-macros.h"
+
 #ifndef LIFE_MENUS_H_
 #define LIFE_MENUS_H_
 

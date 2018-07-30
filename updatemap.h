@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "life-macros.h"
+
 #ifndef LIFE_UPDATEMAP_H_
 #define LIFE_UPDATEMAP_H_
 
