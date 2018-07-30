@@ -28,7 +28,7 @@ addons:
     - perl
 
 before_script:
-  - tar zxf "life-*.tar.gz"
+  - tar zxf life-*.tar.gz
 
 
 
