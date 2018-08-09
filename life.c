@@ -43,7 +43,7 @@ int main (int argc, char * argv[]) {
   int playing = 0;
   int delaymax = 10;
   int delay = 0; // Counts up to 10 so display is slow
-  unsigned long long generation = 0; // Store current generation number
+  unsigned int generation = 0; // Store current generation number
   int livecell = '#';
   int deadcell = '.';
   if (args_info.width_given) {
