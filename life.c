@@ -21,31 +21,41 @@
 
 #ifndef stat_bar_print
 // Print text to status bar in the nice way, without erasing or refreshing
-#define stat_bar_print(win,...)                                    \
-  wprintw(win, __VA_ARGS__);                                     \
+#define stat_bar_print(win,...)                                         \
+  wprintw(win, __VA_ARGS__);                                            \
   for (int _i = getcurx(win); _i < COLS; _i++) waddch(win, ' ');
 #endif
 
 int main (int argc, char * argv[]) {
+  srand(time(NULL));
   unsigned int RULE = 0;
+  int ruleint = 0;
+  int ch = 0;
+  int livecell = '#';
+  int deadcell = '.';
+  int timeout_val = 50;
+  int width = 36;
+  int height = 18;
+  int x = 0;
+  int y = 0;
+  int playing = 0;
+  int delaymax = 10;
+  int delay = 0;
+  unsigned int generation = 0;
+  WINDOW * board = NULL;
+  WINDOW * stat_bar = NULL;
+  WINDOW * entry = NULL;
+  char * map = NULL;
   struct gengetopt_args_info args_info;
-  if (cmdline_parser(argc, argv, &args_info) != 0) exit(EXIT_FAILURE);
+  if (cmdline_parser(argc, argv, &args_info) != 0) {
+    fprintf(stderr, "Couldn't correctly parse commandline arguments.\n");
+    exit(EXIT_FAILURE);
+  }
   initscr();
   raw();
   curs_set(0);
   noecho();
   RULE = args_info.ruleint_arg;
-  srand(time(NULL));
-  int ch = 0;
-  int timeout_val = 50;
-  int width = 36;
-  int height = 18;
-  int playing = 0;
-  int delaymax = 10;
-  int delay = 0; // Counts up to 10 so display is slow
-  unsigned int generation = 0; // Store current generation number
-  int livecell = '#';
-  int deadcell = '.';
   if (args_info.width_given) {
     if (args_info.width_arg > COLS) {
       width = COLS;
@@ -75,7 +85,8 @@ int main (int argc, char * argv[]) {
   }
   if (args_info.live_given) {
     if (strlen(args_info.live_arg) > 1) {
-      fprintf(stderr, "Live character must be one character long");
+      fprintf(stderr, "Live character must be one character long.\n");
+      endwin();
       exit(EXIT_FAILURE);
     } else {
       livecell = (isprint((int) args_info.live_arg[0]) != 0 ? (int) args_info.live_arg[0] : livecell);
@@ -83,7 +94,8 @@ int main (int argc, char * argv[]) {
   }
   if (args_info.dead_given) {
     if (strlen(args_info.dead_arg) > 1) {
-      fprintf(stderr, "Dead character must be one character long");
+      fprintf(stderr, "Dead character must be one character long.\n");
+      endwin();
       exit(EXIT_FAILURE);
     } else {
       deadcell = (isprint((int) args_info.dead_arg[0]) != 0 ? (int) args_info.dead_arg[0] : deadcell);
@@ -94,53 +106,64 @@ int main (int argc, char * argv[]) {
     height = LINES - 2;
   }
   cmdline_parser_free(&args_info);
-  WINDOW * board = newwin(LINES - 2, COLS, 0, 0);
-  WINDOW * stat_bar = newwin(1, 0, LINES - 2, 0);
-  WINDOW * entry = newwin(1, 0, LINES - 1, 0);
+  board = newwin(LINES - 2, COLS, 0, 0);
+  stat_bar = newwin(1, 0, LINES - 2, 0);
+  entry = newwin(1, 0, LINES - 1, 0);
   keypad(board, TRUE);
   wstandout(stat_bar);
-  char * map = NULL;
   map = malloc((height * width)+1);
   memset(map, 0, height * width + 1);
   memset(map, deadcell, height * width);
-  int x = width/2;
-  int y = height/2;
+  x = width/2;
+  y = height/2;
   while (ch != 'q') {
     foreach(werase, 4, stdscr, board, stat_bar, entry);
     if (playing == FALSE) {
       // Numpad and arrow directions
-      if (ch == KEY_UP) {
+      switch(ch) {
+      case KEY_UP:
         if (y > 0) y--;
-      } else if (ch == KEY_DOWN) {
+        break;
+      case KEY_DOWN:
         if (y < height - 1) y++;
-      } else if (ch == KEY_LEFT) {
+        break;
+      case KEY_LEFT:
         if (x > 0) x--;
-      } else if (ch == KEY_RIGHT) {
+        break;
+      case KEY_RIGHT:
         if (x < width - 1) x++;
-      } else if (ch == KEY_A1) {
+        break;
+      case KEY_A1:
         if (x > 0) x--;
         if (y > 0) y--;
-      } else if (ch == KEY_A3) {
+        break;
+      case KEY_A3:
         if (x < width - 1) x++;
         if (y > 0) y--;
-      } else if (ch == KEY_C1) {
+        break;
+      case KEY_C1:
         if (x > 0) x--;
         if (y < height - 1) y++;
-      } else if (ch == KEY_C3) {
+        break;
+      case KEY_C3:
         if (x < width - 1) x++;
         if (y < height - 1) y++;
-      } else if (ch == ' ') {
+        break;
+      case ' ':
         if (map[y*width+x] == deadcell) {
           map[y*width+x] = livecell;
         } else if (map[y*width+x] == livecell) {
           map[(y*width)+x] = deadcell;
         }
-      } else if (ch == '\n') {
+        break;
+      case '\n':
         playing = TRUE;
         wtimeout(board, timeout_val);
-      } else if (ch == 'c') {
+        break;
+      case 'c':
         memset(map, deadcell, width*height);
-      } else if (ch == 'r') {
+        break;
+      case 'r':
         werase(stat_bar);
         stat_bar_print(stat_bar, "Rule int - Current: %d - Default: 6152 - Max: 262143", RULE);
         wrefresh(stat_bar);
@@ -153,15 +176,8 @@ int main (int argc, char * argv[]) {
         }
         werase(stat_bar);
         werase(entry);
-      } else if (strcmp(keyname(ch), "^R") == 0) {
-        foreach(werase, 4, stdscr, board, stat_bar, entry);
-        stat_bar_print(stat_bar, "Click Cancel to exit or Done to exit and save rule");
-        wrefresh(stat_bar);
-        int ruleint = fancy_rules(board, RULE, timeout_val);
-        if (ruleint != -1) {
-          RULE = ruleint;
-        }
-      } else if (ch == 'h') {
+        break;
+      case 'h':
         wtimeout(board, -1);
         foreach(werase, 3, stdscr, board, stat_bar);
         stat_bar_print(stat_bar, "Press any key to return");
@@ -170,7 +186,8 @@ int main (int argc, char * argv[]) {
         doupdate();
         getch();
         wtimeout(board, timeout_val);
-      } else if (ch == 'w') {
+        break;
+      case 'w':
         wtimeout(board, -1);
         foreach(werase, 4, stdscr, board, stat_bar, entry);
         stat_bar_print(stat_bar, "Press any key to return");
@@ -179,6 +196,17 @@ int main (int argc, char * argv[]) {
         doupdate();
         getch();
         wtimeout(board, timeout_val);
+        break;
+      default:
+        if (strcmp(keyname(ch), "^R") == 0) {
+          foreach(werase, 4, stdscr, board, stat_bar, entry);
+          stat_bar_print(stat_bar, "Click Cancel to exit or Done to exit and save rule");
+          wrefresh(stat_bar);
+          ruleint = fancy_rules(board, RULE, timeout_val);
+          if (ruleint != -1) {
+            RULE = ruleint;
+          }
+        }
       }
     } else { // ie PLAYING == TRUE
       if (ch == '\n') {
@@ -210,10 +238,7 @@ int main (int argc, char * argv[]) {
         update_map(map, width, height, livecell, deadcell, RULE);
       }
     }
-    ch = wgetch(board);
-    if (ch <= 'Z' && ch >= 'A') {
-      ch -= ('A' - 'a');
-    }
+    ch = tolower(wgetch(board));
   }
   foreach(werase, 4, stdscr, board, stat_bar, entry);
   foreach(delwin, 3, entry, stat_bar, board);
