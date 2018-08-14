@@ -35,7 +35,5 @@ before_script:
 # Actually check if it works
 script:
   - autoreconf -f -i && ./configure && make && make check
-  - echo -n "q" | ./life > /dev/null
   - cd life-*
   - ./configure && make && make check
-  - echo -n "q" | ./life > /dev/null
