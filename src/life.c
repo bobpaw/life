@@ -22,8 +22,12 @@
 #ifndef stat_bar_print
 // Print text to status bar in the nice way, without erasing or refreshing
 #define stat_bar_print(win,...)                                         \
-  wprintw(win, __VA_ARGS__);                                            \
-  for (int _i = getcurx(win); _i < COLS; _i++) waddch(win, ' ');
+  mvwprintw(win, 0, 0, __VA_ARGS__);                                    \
+  for (int _i = getcurx(win); _i < getmaxx(win); _i++) waddch(win, ' ');
+#endif
+
+#ifndef CTRL
+#define CTRL(ch) ((ch) & 037)
 #endif
 
 int main (int argc, char * argv[]) {
@@ -45,6 +49,8 @@ int main (int argc, char * argv[]) {
   WINDOW * board = NULL;
   WINDOW * stat_bar = NULL;
   WINDOW * entry = NULL;
+  WINDOW * rule_entry_box = NULL;
+  WINDOW * rule_entry = NULL;
   char * map = NULL;
   struct gengetopt_args_info args_info;
   if (cmdline_parser(argc, argv, &args_info) != 0) {
@@ -109,13 +115,17 @@ int main (int argc, char * argv[]) {
   board = newwin(LINES - 2, COLS, 0, 0);
   stat_bar = newwin(1, 0, LINES - 2, 0);
   entry = newwin(1, 0, LINES - 1, 0);
+  rule_entry_box = newwin(10, 36, (LINES >> 1) - 5, (COLS >> 1) - 18);
+  wborder(rule_entry_box, 0, 0, 0, 0, 0, 0, 0, 0);
+  rule_entry = derwin(rule_entry_box, 8, 34, 1, 1);
+  keypad(rule_entry, RULE);
   keypad(board, TRUE);
   wstandout(stat_bar);
   map = malloc((height * width)+1);
   memset(map, 0, height * width + 1);
   memset(map, deadcell, height * width);
-  x = width/2;
-  y = height/2;
+  x = width >> 2;
+  y = height >> 2;
   while (ch != 'q') {
     foreach(werase, 4, stdscr, board, stat_bar, entry);
     if (playing == FALSE) {
@@ -197,16 +207,19 @@ int main (int argc, char * argv[]) {
         getch();
         wtimeout(board, timeout_val);
         break;
-      default:
-        if (strcmp(keyname(ch), "^R") == 0) {
-          foreach(werase, 4, stdscr, board, stat_bar, entry);
-          stat_bar_print(stat_bar, "Click Cancel to exit or Done to exit and save rule");
-          wrefresh(stat_bar);
-          ruleint = fancy_rules(board, RULE, timeout_val);
-          if (ruleint != -1) {
-            RULE = ruleint;
-          }
+      case CTRL('r'):
+        foreach(werase, 4, stdscr, board, stat_bar, entry);
+        stat_bar_print(stat_bar, "Click Cancel to exit or Done to exit and save rule");
+        wrefresh(stat_bar);
+        wrefresh(rule_entry_box);
+        ruleint = fancy_rules(rule_entry, RULE, timeout_val);
+        if (ruleint != -1) {
+          RULE = ruleint;
         }
+        break;
+      default:
+        // Nothing
+        break;
       }
     } else { // ie PLAYING == TRUE
       if (ch == '\n') {
@@ -220,7 +233,7 @@ int main (int argc, char * argv[]) {
       delaymax -= (delaymax > 1 ? 1 : 0);
     } else if (ch == '.') {
       delaymax += (delaymax < 20 ? 1 : 0);
-    } else if (strcmp(keyname(ch), "^L") == 0) {
+    } else if (ch== CTRL('l')) {
       foreach(wclear, 4, stdscr, entry, stat_bar, board);
     }
     for (int i = 0; i < height; ++i) {
@@ -238,11 +251,12 @@ int main (int argc, char * argv[]) {
         update_map(map, width, height, livecell, deadcell, RULE);
       }
     }
-    ch = tolower(wgetch(board));
+    ch = wgetch(board);
+    ch = tolower(ch);
   }
-  foreach(werase, 4, stdscr, board, stat_bar, entry);
-  foreach(delwin, 3, entry, stat_bar, board);
-  board = stat_bar = entry = NULL;
+  foreach(werase, 6, stdscr, board, stat_bar, entry, rule_entry, rule_entry_box);
+  foreach(delwin, 5, entry, stat_bar, board, rule_entry, rule_entry_box);
+  board = stat_bar = entry = rule_entry = rule_entry_box = NULL;
   endwin();
   delwin(stdscr);
   free(map);
