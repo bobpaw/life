@@ -261,5 +261,5 @@ int main (int argc, char * argv[]) {
   delwin(stdscr);
   free(map);
   map = NULL;
-  exit(EXIT_SUCCESS);
+  return 0;
 }

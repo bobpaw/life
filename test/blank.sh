@@ -1,3 +1,3 @@
 #!/bin/sh
 
-echo -n 'q' | ../src/life 2>&1 > /dev/null
+echo -n 'q' | ../src/life > /dev/null 2>&1
