@@ -127,7 +127,7 @@ int main (int argc, char * argv[]) {
   x = width >> 2;
   y = height >> 2;
   while (ch != 'q') {
-    foreach(werase, 4, stdscr, board, stat_bar, entry);
+    foreach(werase, stdscr, board, stat_bar, entry);
     if (playing == FALSE) {
       // Numpad and arrow directions
       switch(ch) {
@@ -189,26 +189,26 @@ int main (int argc, char * argv[]) {
         break;
       case 'h':
         wtimeout(board, -1);
-        foreach(werase, 3, stdscr, board, stat_bar);
+        foreach(werase, stdscr, board, stat_bar);
         stat_bar_print(stat_bar, "Press any key to return");
         print_help(board);
-        foreach(wnoutrefresh, 3, stdscr, board, stat_bar);
+        foreach(wnoutrefresh, stdscr, board, stat_bar);
         doupdate();
         getch();
         wtimeout(board, timeout_val);
         break;
       case 'w':
         wtimeout(board, -1);
-        foreach(werase, 4, stdscr, board, stat_bar, entry);
+        foreach(werase, stdscr, board, stat_bar, entry);
         stat_bar_print(stat_bar, "Press any key to return");
         print_copying_warranty(board);
-        foreach(wnoutrefresh, 3, stdscr, entry, stat_bar);
+        foreach(wnoutrefresh, stdscr, entry, stat_bar);
         doupdate();
         getch();
         wtimeout(board, timeout_val);
         break;
       case CTRL('r'):
-        foreach(werase, 4, stdscr, board, stat_bar, entry);
+        foreach(werase, stdscr, board, stat_bar, entry);
         stat_bar_print(stat_bar, "Click Cancel to exit or Done to exit and save rule");
         wrefresh(stat_bar);
         wrefresh(rule_entry_box);
@@ -234,14 +234,14 @@ int main (int argc, char * argv[]) {
     } else if (ch == '.') {
       delaymax += (delaymax < 20 ? 1 : 0);
     } else if (ch== CTRL('l')) {
-      foreach(wclear, 4, stdscr, entry, stat_bar, board);
+      foreach(wclear, stdscr, entry, stat_bar, board);
     }
     for (int i = 0; i < height; ++i) {
       mvwaddnstr(board, i, 0, map + (i * width), width);
     }
     mvwchgat(board, y, x, 1, A_STANDOUT, COLOR_PAIR(0), NULL);
     stat_bar_print(stat_bar, "(%d, %d)\t\tGeneration: %d\t\tDelay Time: %d", x, y, generation, delaymax);
-    foreach(wnoutrefresh, 4, stdscr, board, entry, stat_bar);
+    foreach(wnoutrefresh, stdscr, board, entry, stat_bar);
     doupdate();
     if (playing == TRUE) {
       delay++;
@@ -254,8 +254,8 @@ int main (int argc, char * argv[]) {
     ch = wgetch(board);
     ch = tolower(ch);
   }
-  foreach(werase, 6, stdscr, board, stat_bar, entry, rule_entry, rule_entry_box);
-  foreach(delwin, 5, entry, stat_bar, board, rule_entry, rule_entry_box);
+  foreach(werase, stdscr, board, stat_bar, entry, rule_entry, rule_entry_box);
+  foreach(delwin, entry, stat_bar, board, rule_entry, rule_entry_box);
   board = stat_bar = entry = rule_entry = rule_entry_box = NULL;
   endwin();
   delwin(stdscr);
