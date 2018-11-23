@@ -118,7 +118,7 @@ int main (int argc, char * argv[]) {
   rule_entry_box = newwin(10, 36, (LINES >> 1) - 5, (COLS >> 1) - 18);
   wborder(rule_entry_box, 0, 0, 0, 0, 0, 0, 0, 0);
   rule_entry = derwin(rule_entry_box, 8, 34, 1, 1);
-  keypad(rule_entry, RULE);
+  keypad(rule_entry, TRUE);
   keypad(board, TRUE);
   wstandout(stat_bar);
   map = malloc((height * width)+1);
