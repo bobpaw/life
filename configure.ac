@@ -4,7 +4,7 @@
 AC_PREREQ([2.69])
 AC_INIT([life], [1.6.0], [aiden.woodruff@gmail.com])
 AC_CONFIG_SRCDIR([src/life.c])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([src/config.h])
 
 # Checks for programs.
 AC_PROG_CC

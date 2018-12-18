@@ -21,9 +21,9 @@
 
 #ifndef stat_bar_print
 // Print text to status bar in the nice way, without erasing or refreshing
-#define stat_bar_print(win,...)                                         \
-  mvwprintw(win, 0, 0, __VA_ARGS__);                                    \
-  for (int _i = getcurx(win); _i < getmaxx(win); _i++) waddch(win, ' ');
+#define stat_bar_print(win,...) do { \
+	mvwprintw(win, 0, 0, __VA_ARGS__);                                    \
+	mvwchgat(stat_bar, 0, 0, -1, A_STANDOUT, COLOR_PAIR(0), NULL); } while (0)
 #endif
 
 #ifndef CTRL
@@ -38,10 +38,10 @@ int main (int argc, char * argv[]) {
   int livecell = '#';
   int deadcell = '.';
   int timeout_val = 50;
-  int width = 36;
-  int height = 18;
-  int x = 0;
-  int y = 0;
+  size_t width = 36;
+  size_t height = 18;
+  size_t x = 0;
+  size_t y = 0;
   int playing = 0;
   int delaymax = 10;
   int delay = 0;
@@ -121,12 +121,12 @@ int main (int argc, char * argv[]) {
   keypad(rule_entry, RULE);
   keypad(board, TRUE);
   wstandout(stat_bar);
-  map = malloc((height * width)+1);
+  map = malloc(height * width + 1);
   memset(map, 0, height * width + 1);
   memset(map, deadcell, height * width);
-  x = width >> 2;
-  y = height >> 2;
-  while (ch != 'q') {
+  x = width >> 1; // width / 2
+  y = height >> 1; // height / 2
+  while (ch != 'q' && ch != 'Q') {
     foreach(werase, stdscr, board, stat_bar, entry);
     if (playing == FALSE) {
       // Numpad and arrow directions
@@ -202,9 +202,10 @@ int main (int argc, char * argv[]) {
         foreach(werase, stdscr, board, stat_bar, entry);
         stat_bar_print(stat_bar, "Press any key to return");
         print_copying_warranty(board);
-        foreach(wnoutrefresh, stdscr, entry, stat_bar);
+        foreach(wnoutrefresh, stdscr, entry, stat_bar, board);
         doupdate();
         getch();
+        foreach(werase, stdscr, board, stat_bar, board);
         wtimeout(board, timeout_val);
         break;
       case CTRL('r'):
@@ -237,10 +238,17 @@ int main (int argc, char * argv[]) {
       foreach(wclear, stdscr, entry, stat_bar, board);
     }
     for (int i = 0; i < height; ++i) {
-      mvwaddnstr(board, i, 0, map + (i * width), width);
+      mvwaddnstr(board, i, 0, (const char*) (map + (i * width)), width);
+      // *(map + (i * width) + x));
     }
-    mvwchgat(board, y, x, 1, A_STANDOUT, COLOR_PAIR(0), NULL);
-    stat_bar_print(stat_bar, "(%d, %d)\t\tGeneration: %d\t\tDelay Time: %d", x, y, generation, delaymax);
+    if (mvwchgat(board, y, x, 1, A_STANDOUT, COLOR_PAIR(0), NULL) == ERR) fprintf(stderr, "Error (mvwchgat)\n");
+
+    // Emulate tabs
+		mvwprintw(stat_bar, 0, 0, "(%d, %d)", x, y);
+		mvwprintw(stat_bar, 0, 12, "Generation: %d", generation);
+		mvwprintw(stat_bar, 0, 30, "Delay Time: %d", delaymax);
+		mvwchgat(stat_bar, 0, 0, -1, A_STANDOUT, COLOR_PAIR(0), NULL);
+
     foreach(wnoutrefresh, stdscr, board, entry, stat_bar);
     doupdate();
     if (playing == TRUE) {
@@ -252,14 +260,14 @@ int main (int argc, char * argv[]) {
       }
     }
     ch = wgetch(board);
-    ch = tolower(ch);
   }
+  endwin();
   foreach(werase, stdscr, board, stat_bar, entry, rule_entry, rule_entry_box);
   foreach(delwin, entry, stat_bar, board, rule_entry, rule_entry_box);
   board = stat_bar = entry = rule_entry = rule_entry_box = NULL;
-  endwin();
   delwin(stdscr);
   free(map);
   map = NULL;
+  fprintf(stdout, "Height: %zu\nWidth: %zu\n", height, width);
   return 0;
 }
