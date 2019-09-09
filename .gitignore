@@ -1,3 +1,20 @@
 # Ignore backups
 *~
 \#*#
+
+# Ignore autotools stuff
+aclocal.m4
+configure
+configure.scan
+config.log
+config.status
+Makefile.in
+config.h*
+autoscan.log
+autom4te.cache/
+.deps/
+Makefile
+stamp*
+
+# Object files
+*.o
