@@ -21,9 +21,9 @@
 
 #ifndef stat_bar_print
 // Print text to status bar in the nice way, without erasing or refreshing
-#define stat_bar_print(win,...)                                         \
+#define stat_bar_print(win,...) do {                                    \
   mvwprintw(win, 0, 0, __VA_ARGS__);                                    \
-  for (int _i = getcurx(win); _i < getmaxx(win); _i++) waddch(win, ' ');
+  mvwchgat(stat_bar, 0, 0, -1, A_STANDOUT, COLOR_PAIR(0), NULL); } while (0)
 #endif
 
 #ifndef CTRL
@@ -32,16 +32,16 @@
 
 int main (int argc, char * argv[]) {
   srand(time(NULL));
-  unsigned int RULE = 0;
+  unsigned int RULE = 6152;
   int ruleint = 0;
   int ch = 0;
   int livecell = '#';
   int deadcell = '.';
   int timeout_val = 50;
-  int width = 36;
-  int height = 18;
-  int x = 0;
-  int y = 0;
+  unsigned int width = 36;
+  unsigned int height = 18;
+  unsigned int x = 0;
+  unsigned int y = 0;
   int playing = 0;
   int delaymax = 10;
   int delay = 0;
@@ -51,16 +51,16 @@ int main (int argc, char * argv[]) {
   WINDOW * entry = NULL;
   WINDOW * rule_entry_box = NULL;
   WINDOW * rule_entry = NULL;
-  char * map = NULL;
+  BOARD map = NULL, intermap = NULL; /*
   struct gengetopt_args_info args_info;
   if (cmdline_parser(argc, argv, &args_info) != 0) {
     fprintf(stderr, "Couldn't correctly parse commandline arguments.\n");
     exit(EXIT_FAILURE);
-  }
+  } */
   initscr();
   raw();
   curs_set(0);
-  noecho();
+  noecho(); /*
   RULE = args_info.ruleint_arg;
   if (args_info.width_given) {
     if (args_info.width_arg > COLS) {
@@ -111,7 +111,7 @@ int main (int argc, char * argv[]) {
     width = COLS;
     height = LINES - 2;
   }
-  cmdline_parser_free(&args_info);
+  cmdline_parser_free(&args_info); */
   board = newwin(LINES - 2, COLS, 0, 0);
   stat_bar = newwin(1, 0, LINES - 2, 0);
   entry = newwin(1, 0, LINES - 1, 0);
@@ -121,9 +121,8 @@ int main (int argc, char * argv[]) {
   keypad(rule_entry, TRUE);
   keypad(board, TRUE);
   wstandout(stat_bar);
-  map = malloc((height * width)+1);
-  memset(map, 0, height * width + 1);
-  memset(map, deadcell, height * width);
+  map = newboard(width, height);
+  intermap = dupboard(map);
   x = width >> 1; // width / 2, should be optimized anyway
   y = height >> 1; // height / 2, should be optimized anyway
   while (ch != 'q' && ch != 'Q') {
@@ -160,18 +159,16 @@ int main (int argc, char * argv[]) {
         if (y < height - 1) y++;
         break;
       case ' ':
-        if (map[y*width+x] == deadcell) {
-          map[y*width+x] = livecell;
-        } else if (map[y*width+x] == livecell) {
-          map[(y*width)+x] = deadcell;
-        }
+		  board_flip(map, x, y);
         break;
       case '\n':
+	  case '\r':
+	  case KEY_ENTER:
         playing = TRUE;
         wtimeout(board, timeout_val);
         break;
       case 'c':
-        memset(map, deadcell, width*height);
+        board_setall(map, 0);
         break;
       case 'r':
         werase(stat_bar);
@@ -223,9 +220,13 @@ int main (int argc, char * argv[]) {
         break;
       }
     } else { // ie PLAYING == TRUE
-      if (ch == '\n') {
+      switch (ch) {
+	  case '\n': case '\r': case KEY_ENTER:
         playing = FALSE;
         wtimeout(board, -1);
+		break;
+	  default:
+		  ;
       }
     }
 
@@ -234,12 +235,13 @@ int main (int argc, char * argv[]) {
       delaymax -= (delaymax > 1 ? 1 : 0);
     } else if (ch == '.') {
       delaymax += (delaymax < 20 ? 1 : 0);
-    } else if (ch== CTRL('l')) {
+    } else if (ch == CTRL('l')) {
       foreach(wclear, stdscr, entry, stat_bar, board);
     }
-    for (int i = 0; i < height; ++i) {
-      mvwaddnstr(board, i, 0, map + (i * width), width);
-    }
+	for (unsigned int y = 0; y < height; ++y)
+		for (unsigned int x = 0; x < width; ++x)
+			mvwaddch(board, y, x, board_getval(map, x, y) == 0 ? deadcell : livecell);
+
 	if (mvwchgat(board, y, x, 1, A_STANDOUT, COLOR_PAIR(0), NULL) == ERR) fprintf(stderr, "Error (mvwchgat)\n");
 
 	// Emulate tabs
@@ -254,7 +256,7 @@ int main (int argc, char * argv[]) {
       if (delay >= delaymax) {
         delay = 0;
         generation++;
-        update_map(map, width, height, livecell, deadcell, RULE);
+        update_map(map, intermap, width, height, RULE);
       }
     }
     ch = wgetch(board);
@@ -264,7 +266,8 @@ int main (int argc, char * argv[]) {
   foreach(delwin, entry, stat_bar, board, rule_entry, rule_entry_box);
   board = stat_bar = entry = rule_entry = rule_entry_box = NULL;
   delwin(stdscr);
-  free(map);
-  map = NULL;
+  delboard(map);
+  delboard(intermap);
+  map = intermap = NULL;
   return 0;
 }

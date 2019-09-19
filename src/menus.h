@@ -21,7 +21,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <ncurses.h>
+#include "correct_curses.h"
 
 #include "life-macros.h"
 

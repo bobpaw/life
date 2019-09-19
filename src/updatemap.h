@@ -21,10 +21,11 @@
 #include <string.h>
 
 #include "life-macros.h"
+#include "board.h"
 
 #ifndef LIFE_UPDATEMAP_H_
 #define LIFE_UPDATEMAP_H_
 
-char * update_map (char * base_map, const int width, const int height, char livecell, char deadcell, const unsigned int ruleint);
+void update_map (BOARD base_map, BOARD intermap, const unsigned int width, const unsigned int height, const unsigned int ruleint);
 
 #endif // LIFE_UPDATEMAP_H_
