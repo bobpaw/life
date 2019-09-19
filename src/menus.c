@@ -172,5 +172,7 @@ int fancy_rules (WINDOW * win, int ruleint, int speed) {
       ch = wgetch(win);
     }
   }
+  werase(win);
+  wrefresh(win);
   return ruleint;
 }

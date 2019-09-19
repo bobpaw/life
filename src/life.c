@@ -124,9 +124,9 @@ int main (int argc, char * argv[]) {
   map = malloc((height * width)+1);
   memset(map, 0, height * width + 1);
   memset(map, deadcell, height * width);
-  x = width >> 2;
-  y = height >> 2;
-  while (ch != 'q') {
+  x = width >> 1; // width / 2, should be optimized anyway
+  y = height >> 1; // height / 2, should be optimized anyway
+  while (ch != 'q' && ch != 'Q') {
     foreach(werase, stdscr, board, stat_bar, entry);
     if (playing == FALSE) {
       // Numpad and arrow directions
@@ -202,9 +202,10 @@ int main (int argc, char * argv[]) {
         foreach(werase, stdscr, board, stat_bar, entry);
         stat_bar_print(stat_bar, "Press any key to return");
         print_copying_warranty(board);
-        foreach(wnoutrefresh, stdscr, entry, stat_bar);
+        foreach(wnoutrefresh, stdscr, entry, stat_bar, board);
         doupdate();
         getch();
+		foreach(werase, stdscr, stat_bar, board);
         wtimeout(board, timeout_val);
         break;
       case CTRL('r'):
@@ -239,8 +240,13 @@ int main (int argc, char * argv[]) {
     for (int i = 0; i < height; ++i) {
       mvwaddnstr(board, i, 0, map + (i * width), width);
     }
-    mvwchgat(board, y, x, 1, A_STANDOUT, COLOR_PAIR(0), NULL);
-    stat_bar_print(stat_bar, "(%d, %d)\t\tGeneration: %d\t\tDelay Time: %d", x, y, generation, delaymax);
+	if (mvwchgat(board, y, x, 1, A_STANDOUT, COLOR_PAIR(0), NULL) == ERR) fprintf(stderr, "Error (mvwchgat)\n");
+
+	// Emulate tabs
+	mvwprintw(stat_bar, 0, 0, "(%d, %d)", x, y);
+	mvwprintw(stat_bar, 0, 12, "Generation: %d", generation);
+	mvwprintw(stat_bar, 0, 30, "Delay Time: %d", delaymax);
+	mvwchgat(stat_bar, 0, 0, -1, A_STANDOUT, COLOR_PAIR(0), NULL);
     foreach(wnoutrefresh, stdscr, board, entry, stat_bar);
     doupdate();
     if (playing == TRUE) {
@@ -252,12 +258,11 @@ int main (int argc, char * argv[]) {
       }
     }
     ch = wgetch(board);
-    ch = tolower(ch);
   }
+  endwin();
   foreach(werase, stdscr, board, stat_bar, entry, rule_entry, rule_entry_box);
   foreach(delwin, entry, stat_bar, board, rule_entry, rule_entry_box);
   board = stat_bar = entry = rule_entry = rule_entry_box = NULL;
-  endwin();
   delwin(stdscr);
   free(map);
   map = NULL;
