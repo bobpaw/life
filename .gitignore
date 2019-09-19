@@ -8,3 +8,5 @@ build/
 
 # Visual Studio
 .vs
+CMakeSettings.json
+CppProperties.json
