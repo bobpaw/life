@@ -1,3 +1,10 @@
 # Ignore backups
 *~
 \#*#
+
+# cmake build dir
+out/
+build/
+
+# Visual Studio
+.vs

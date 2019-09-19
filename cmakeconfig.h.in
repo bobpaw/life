@@ -1,0 +1,131 @@
+/* Define to 1 if you have the <cmath> header file. */
+#cmakedefine HAVE_CMATH
+
+/* Define to 1 if you have the <cstdint> header file. */
+#cmakedefine HAVE_CSTDINT
+
+/* Define to 1 if a SysV or X/Open compatible Curses library is present */
+#cmakedefine HAVE_CURSES
+
+/* Define to 1 if library supports color (enhanced functions) */
+#cmakedefine HAVE_CURSES_COLOR
+
+/* Define to 1 if library supports X/Open Enhanced functions */
+#undef HAVE_CURSES_ENHANCED
+
+/* Define to 1 if <curses.h> is present */
+#cmakedefine HAVE_CURSES_H
+
+/* Define to 1 if library supports certain obsolete features */
+#undef HAVE_CURSES_OBSOLETE
+
+/* define if the compiler supports auto return type */
+#cmakedefine HAVE_AUTO_RETURN
+
+/* Define if the compiler supports trailing return type */
+#cmakedefine HAVE_TRAILING_RETURN
+
+#cmakedefine HAVE_NOEXCEPT
+// My use of 201003 as the date is based off of N3050's date.
+#if defined(HAVE_NOEXCEPT) || __cplusplus >= 201003L
+#define my_noexcept noexcept
+#else
+#define my_noexcept throw()
+#endif
+
+/* Define to 1 if you have the <functional> header file. */
+#cmakedefine HAVE_FUNCTIONAL
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#cmakedefine HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <iostream> header file. */
+#cmakedefine HAVE_IOSTREAM
+
+/* Define to 1 if you have the <memory.h> header file. */
+#cmakedefine HAVE_MEMORY_H
+
+/* Define to 1 if the Ncurses library is present */
+#cmakedefine HAVE_NCURSES
+
+/* Define to 1 if the NcursesW library is present */
+#undef HAVE_NCURSESW
+
+/* Define to 1 if <ncursesw/curses.h> is present */
+#undef HAVE_NCURSESW_CURSES_H
+
+/* Define to 1 if <ncursesw.h> is present */
+#undef HAVE_NCURSESW_H
+
+/* Define to 1 if <ncurses/curses.h> is present */
+#cmakedefine HAVE_NCURSES_CURSES_H
+
+/* Define to 1 if <ncurses.h> is present */
+#cmakedefine HAVE_NCURSES_H
+
+/* Define to 1 if you have the <random> header file. */
+#cmakedefine HAVE_RANDOM
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#cmakedefine HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#cmakedefine HAVE_STDLIB_H
+
+/* Define to 1 if you have the <string> header file. */
+#cmakedefine HAVE_STRING
+
+/* Define to 1 if you have the <strings.h> header file. */
+#cmakedefine HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#cmakedefine HAVE_STRING_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#cmakedefine HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#cmakedefine HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#cmakedefine HAVE_UNISTD_H
+
+/* Name of package */
+#cmakedefine PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#cmakedefine PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#cmakedefine PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#cmakedefine PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#cmakedefine PACKAGE_URL
+
+/* Define to the version of this package. */
+#cmakedefine PACKAGE_VERSION
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Version number of package */
+#ifdef PACKAGE_VERSION
+#define VERSION PACKAGE_VERSION
+#else
+#undef VERSION
+#endif
+
+#cmakedefine HAVE_SIZEOF_INT32_T
+@SIZEOF_INT32_T_CODE@
+
+// Technically the standard doesn't require int32_t. But it does require int_fast32_t. We'll just prefer speed (over size).
+#if !(defined(HAVE_SIZEOF_INT32_T) && SIZEOF_INT32_T == 4)
+#define int32_t int_fast32_t
+#endif
+
