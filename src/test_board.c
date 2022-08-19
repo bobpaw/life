@@ -2,7 +2,7 @@
 #include "board.h"
 
 int main () {
-	printf("sizeof(unsigned int): %d\n", sizeof(unsigned int));
+	printf("sizeof(unsigned int): %zd\n", sizeof(unsigned int));
 	BOARD jim = newboard(10, 10);
 	for (unsigned int y = 0; y < 10; ++y) {
 		for (unsigned int x = 0; x < 10; ++x)
